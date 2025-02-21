@@ -1,128 +1,139 @@
 # SLICE: Stabilized LIME for Consistent Explanations for Image Classification
 
-Welcome to the official repository for our reproducibility research of "**SLICE: Stabilized LIME for Consistent Explanations for Image Classification**", an explainability algorithm to identify positive and negetive superpixels in an image with consistancy. The code uses PyTorch, Multi-threading and Multiprocessing to provide an efficient and fast implementation of the algorithms.
+Welcome to the official repository for our reproducibility research on **SLICE: Stabilized LIME for Consistent Explanations for Image Classification**, an explainability algorithm that identifies positive and negative superpixels in an image with consistency. The code uses PyTorch, multi-threading, and multiprocessing to provide an efficient and fast implementation of the algorithms.
 
-The code in this repository has been used to research the reproducability of the experiments conducted in the original 'SLICE' paper. Furthermore, the repository contains our contributions. Our contributions include:
-<ul>
-  <li><b>GRID-LIME</b>, a new model that provides better stability than LIME and better explainability than SLICE.</li>
-  <li><b>Ground Truth Overlap (GTO)</b> metric to measure how well an explainable model explains the classified output.</li>
-</ul>
+This repository contains the code used to research the reproducibility of the experiments conducted in the original 'SLICE' paper. Additionally, it includes our contributions:
 
+- **GRID-LIME**, a new model that provides better stability than LIME and better explainability than SLICE.
+- **Ground Truth Overlap (GTO)** metric to measure how well an explainability model explains the classified output in terms of region overlap.
 
-## Table of Content
+## Table of Contents
 - [Installation Guide](#installation-guide)
 - [Datasets](#datasets)
 - [How to Run](#how-to-run)
   - [Experiments Notebook](#experiments-notebook)
-  - [Running Individual Explaination Model](#running-individual-explaination-model)
+  - [Running Individual Explanation Model](#running-individual-explanation-model)
   - [Running Generate Plots Code](#running-generate-plots-code)
 
-
 ## Installation Guide
-<ol type=1>
-<li> Download the repository as a .zip or clone the repository using:
-<br>git clone git@github.com:aritraban21/FACT-Group7.git
-</li>
-<br>
-<li> Run the remaining steps <b>only if</b> running the code on local machine:
-<ol type='a'>
-<li> Install the correct version of the used packages from the .yml file using the following command:
-<b>conda env create -f environment.yml</b>
-</li>
-<li> Upon installation of the environment, it can be (de)activated using:
-<b>conda activate slice_env</b>
-<br>
-<b>conda deactivate slice_env</b>
-</li>
 
-<li> The environment can be deleted using:
-<b>conda remove -n slice_env --all</b>
-</li>
+1. Download the repository as a `.zip` file or clone it using:
+   
+   ```bash
+   git clone [repository-url]
+   ```
 
-<li> Additional packages can be installed using pip:
-<b>pip install [package_name]</b>
-</li>
-</ol>
-</li>
-</ol>
+2. **If running the code on a local machine**, follow these steps:
+   
+   a. Install the required packages from the `.yml` file:
+   
+   ```bash
+   conda env create -f environment.yml
+   ```
+   
+   b. Activate or deactivate the environment:
+   
+   ```bash
+   conda activate slice_env
+   conda deactivate slice_env
+   ```
+   
+   c. To delete the environment:
+   
+   ```bash
+   conda remove -n slice_env --all
+   ```
+   
+   d. Additional packages can be installed using:
+   
+   ```bash
+   pip install [package_name]
+   ```
 
 ## Datasets
-The Oxford-IIIT pets dataset and Pascal VOC dataset are downloaded dynamically via the code (based on the dataset parameter passed when running the run_explainer.py) and do not need to be separately downloaded.
+
+The Oxford-IIIT Pets dataset and Pascal VOC dataset are dynamically downloaded via the code (based on the dataset parameter passed when running `run_explainer.py`). There is no need to download them separately.
 
 ## How to Run
-Now that the environment has been correctly installed, it is time to run the code.
+
+Once the environment is set up correctly, you can run the code.
 
 ### Experiments Notebook
-We have created a single jupyter notebook (Run_Experiments.ipynb) that runs the run_explainer.py for all possible combinations of pretrained model (Inceptionv3/Resnet50), explainer model (Lime/Slice/GridLime) and dataset (Oxpets-IIIT pet/Pascal VOC) to generate the results folder and then plot the CCM, GTO and AOPC plots.
 
-It is <b>recommended</b> to run the Run_explainer.ipynb on Google Colab (preferably on A100 GPU). In order to do so, please follow the following steps:
-<ol type=1>
-<li> Open the Run_Explainer.ipynb on Google Colab.</li>
-<li> Change the runtime time to A100 (preferred) or any available GPU.</li>
-<li> Insert a new cell at the very top of the notebook and paste the following code:
+A Jupyter Notebook (`run_experiments.ipynb`) runs `run_explainer.py` for all combinations of:
+- Pretrained model: `InceptionV3` / `ResNet50`
+- Explainer model: `LIME` / `SLICE` / `GRID-LIME`
+- Dataset: `Oxford-IIIT Pets` / `Pascal VOC`
 
+This generates the results folder and plots **CCM, GTO, and AOPC** metrics.
+
+#### Running on Google Colab (Recommended, preferably on an A100 GPU)
+
+1. Open `run_experiments.ipynb` in Google Colab.
+2. Change the runtime to **A100 GPU** (preferred) or any available GPU.
+3. Insert a new cell at the top and paste the following:
+   
+   ```python
+   !pip install rbo
+   from google.colab import files
+   import os
+   files.upload()
+   
+   !unzip [repository-name].zip
+   
+   os.chdir('[repository-name]')
+   os.remove('run_experiments.ipynb')
+   ```
+
+4. Click **Run All** in the Runtime tab. The first cell will prompt you to upload a `.zip` file of the repository downloaded in the installation step.
+
+#### Running Locally (Not Recommended, Slow Execution)
+
+1. Open Jupyter Notebook with the `slice_env` environment activated.
+2. Run all cells in the notebook.
+
+For both methods, the plots will be saved in the **`Final Plots`** folder (automatically created).
+
+### Running Individual Explanation Model
+
+You can also run individual explainability models by executing `run_explainer.py` with the appropriate command-line arguments:
+
+```bash
+python run_explainer.py --explain_model [lime/grid_lime/slice] \
+                        --pretrained_model [inceptionv3/resnet50] \
+                        --dataset [oxpets/pvoc] \
+                        --metrics [yes/no] \
+                        --num_runs [positive_integer] \
+                        --num_perturb [positive_integer] \
+                        --num_images_from_dataset [positive_integer]
 ```
-!pip install rbo
-from google.colab import files
-import os
-files.upload()
 
-!unzip FACT-Group7.zip
-
-os.chdir('FACT-Group7')
-os.remove('Run_Experiments.ipynb')
-```
-</li>
-
-<li> Go to the Runtime tab and select Run All option. The first cell will give you an upload file button. Click on the button and upload the .zip file of the repository downloaded in installation step.</li>
-</ol>
-
-
-If running on local machine (Not recommended as it will take a lot of time to run):
-<ol type=1>
-<li> Open jupyter notebook with the slice_env installed in installation step and run all the cells of the notebook.</li>
-</ol>
-
-For both google colab and local machine, the requested plots will be saved in 'Final Plots' folder (created automatically by the code).
-
-### Running Individual Explaination Model
-
-You can also run the individual explaination models by running the run_explainer.py file with appropriate command line arguments.
-
-The following command line arguments are available for use:
-
-<ol type=1>
-  <li> explain_model - This argument is used to specify the explainability model to run. It's default value is 'slice'. It can take one of the following three values: 'lime', 'grid_lime' and 'slice'.</li>
-  <br>
-  <li> pretrained_model - This argument is used to specify the pretrained model is being explained using the explainability model. It's default value is 'inceptionv3'. It can take one of the following two values: 'inceptionv3' and 'resnet50'.</li>
-  <br>
-  <li> dataset - This argument is used to specify the dataset to use. It's default value is 'oxpets'. It can take one of the following two values: 'oxpets' and 'pvoc'.</li>
-  <br>
-  <li> metrics - This argument is used to specify whether we are calculating metrics or not. It's default value is 'no'. It can take one of the following two values: 'yes' and 'no'.</li>
-  <br>
-  <li> num_runs - This argument is used to specify the number of times each explainer algorithm will be run in case we are calculating metrics. It's default value is 5. It can take any positive integer value.</li>
-  <br>
-  <li> num_perturb - This argument is used to specify the number of perturbations to be used at various steps of the algorithm. It's default value is 500. It can take any positive integer value.</li>
-  <br>
-  <li> num_images_from_dataset - This argument is used to specify the number of images to be used from the chosen dataset. It's default value is 50. It can take any positive integer value.</li>
-</ol>
+#### Available Arguments:
+- `--explain_model` (default: `slice`) – Explainability model (`lime`, `grid_lime`, or `slice`).
+- `--pretrained_model` (default: `inceptionv3`) – Pretrained model (`inceptionv3` or `resnet50`).
+- `--dataset` (default: `oxpets`) – Dataset (`oxpets` or `pvoc`).
+- `--metrics` (default: `no`) – Whether to calculate metrics (`yes` or `no`).
+- `--num_runs` (default: `5`) – Number of times to run each explainer algorithm (positive integer).
+- `--num_perturb` (default: `500`) – Number of perturbations used in the algorithm (positive integer).
+- `--num_images_from_dataset` (default: `50`) – Number of images used from the dataset (positive integer).
 
 ### Running Generate Plots Code
 
-If the model results have already been generated, you can also directly run the generate_results.py file with appropriate command line arguments to plot the output graphs.
+If model results have already been generated, you can run `generate_results.py` directly with the following command:
 
-The following command line arguments are available for use:
+```bash
+python generate_results.py --generate_ccm_plots_flag [yes/no] \
+                           --generate_gto_plots_flag [yes/no] \
+                           --generate_aopc_plots_flag [yes/no] \
+                           --aopc_sigma_constant [yes/no] \
+                           --num_iter [positive_integer]
+```
 
-<ol type=1>
-<li> generate_ccm_plots_flag - This argument is used to specify whether we want to generate the plot for CCM metric. It's default value is 'yes'. It can take one of the following two values: 'yes' and 'no'.</li>
-<br>
-<li> generate_gto_plots_flag - This argument is used to specify whether we want to generate the plot for GTO metric. It's default value is 'yes'. It can take one of the following two values: 'yes' and 'no'.</li>
-<br>
-<li> generate_aopc_plots_flag - This argument is used to specify whether we want to generate the plot for AOPC metric. It's default value is 'yes'. It can take one of the following two values: 'yes' and 'no'.</li>
-<br>
-<li> aopc_sigma_constant - This argument is used to specify whether we are using a constant sigma value of 0 for slice AOPC plots or the best sigma value selected during model run. It's default value is 'no'. It can take one of the following two values: 'yes' and 'no'.</li>
-<br>
-<li> num_iter - This argument is used to specify the number of times the explainer algorithm was run to generate results for calculating the metrics. It's default value is 10. It can take any positive integer value.</li>
-</ol>
+#### Available Arguments:
+- `--generate_ccm_plots_flag` (default: `yes`) – Generate CCM metric plot (`yes` or `no`).
+- `--generate_gto_plots_flag` (default: `yes`) – Generate GTO metric plot (`yes` or `no`).
+- `--generate_aopc_plots_flag` (default: `yes`) – Generate AOPC metric plot (`yes` or `no`).
+- `--aopc_sigma_constant` (default: `no`) – Use a constant sigma value of 0 for SLICE AOPC plots (`yes` or `no`).
+- `--num_iter` (default: `10`) – Number of times the explainer algorithm was run for metric calculations (positive integer).
 
-The requested plots will be saved in 'Final Plots' folder (created automatically by the code).
+The plots will be saved in the **`Final Plots`** folder (automatically created).
